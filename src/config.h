@@ -21,7 +21,9 @@
   #define DIO1 3     // irq = dio1
   #define NSS 8      // cs = nss
   #define RST 4
-#else
+#endif
+
+#ifdef UNO
   #define VBATPIN A7
   #define REFVOL 5
   // Pinout for Uno with Dragino Lora Shield v1.2
@@ -29,3 +31,12 @@
   #define NSS 10      // cs = nss
   #define RST 9
 #endif 
+
+#ifdef FEATHER32U4
+  #define VBATPIN A7
+  #define REFVOL 3.3
+  // Pinout for Adafruit Feather 32u4 LoRa
+  #define DIO1 7     // irq = dio1
+  #define NSS 8      // cs = nss
+  #define RST 4
+#endif
