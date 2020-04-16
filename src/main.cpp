@@ -15,9 +15,6 @@
 #ifdef FEATHERM0
 #include <Adafruit_SleepyDog.h>
 #endif
-#ifdef FEATHER32U4
-#include <Adafruit_SleepyDog.h>
-#endif
 
 uint8_t NwkSkey[16] = NWKSKEY; // TTN Network Session Key
 uint8_t AppSkey[16] = APPSKEY; // TTN Application Session Key
@@ -69,7 +66,7 @@ void defineFSMTransitions()
 /* Declare Sensors  */
 RandomDataSensor temperature{10, 30};
 RandomDataSensor humiditiy{40, 80};
-VoltageSensor batteryVoltage{3, REFVOL};
+VoltageSensor batteryVoltage{VBATPIN, REFVOL};
 
 /* observe all sensors and process their data accoring to their sensor class implementation */
 void observe()
@@ -78,7 +75,7 @@ void observe()
   temperature.measure();
   humiditiy.measure();
   batteryVoltage.measure();
-  debugLn(" end ");
+  debugLn(" end");
   if (sleepCounter < numObservationsTillSend)
   {
     fsm.trigger(Event::SLEEP);
@@ -130,31 +127,35 @@ void send()
   debug(temperature.getValue().min);
   debug(", ");
   debugLn(temperature.getValue().max);
+  debug("Humidity: ");
+  debugLn(humiditiy.getValue().avg / 100);
+  debug("Voltage: ");
+  debugLn(batteryVoltage.getValue().avg);
+
   lora.sendData(payload.getBuffer(), payload.getSize(), lora.frameCounter);
   lora.frameCounter++;
   delay(1000);
   digitalWrite(LED_BUILTIN, LOW);
 
-  debugLn("sent");
+  debugLn("Data sent");
 
   temperature.reset();
   humiditiy.reset();
   batteryVoltage.reset();
   sleepCounter = 0;
 
-#ifdef DEBUG // For debuging only send once to prevent the device from beeing blocked by TTN
-  debugLn("out Finish");
+/*#ifdef DEBUG // For debuging only send once to prevent the device from beeing blocked by TTN
+  debugLn("Finished...");
   fsm.trigger(Event::FINISH);
-#else
-  debugLn("out Sleep");
+#else*/
   fsm.trigger(Event::SLEEP);
-#endif
+//#endif
 }
 
 void setup()
 {
 #ifdef DEBUG
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial)
     ;
   debugLn("Serial started");

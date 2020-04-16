@@ -33,7 +33,7 @@
 #endif 
 
 #ifdef FEATHER32U4
-  #define VBATPIN A7
+  #define VBATPIN A9
   #define REFVOL 3.3
   // Pinout for Adafruit Feather 32u4 LoRa
   #define DIO1 7     // irq = dio1
